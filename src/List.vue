@@ -5,10 +5,21 @@
             v-if="!path"
             class="grow d-flex justify-center align-center grey--text"
         >Select a folder or a file</v-card-text>
-        <v-card-text
+        <v-card
             v-else-if="isFile"
             class="grow d-flex justify-center align-center"
-        >File: {{ path }}</v-card-text>
+            >
+            <v-list-item>
+                <v-list-item-content class="py-2">
+                    <v-list-item-title v-text="filename"></v-list-item-title>
+                    <v-list-item-subtitle>{{ path }}</v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-icon @click="downloadWithAxios(path, filename)">
+                <v-icon class="primary--text">mdi-download</v-icon>
+                </v-list-item-icon>
+            </v-list-item>
+           
+        </v-card>
         <v-card-text v-else-if="dirs.length || files.length" class="grow">
             <v-list subheader v-if="dirs.length">
                 <v-subheader>Folders</v-subheader>
@@ -51,6 +62,11 @@
                         <v-list-item-title v-text="item.basename"></v-list-item-title>
                         <v-list-item-subtitle>{{ formatBytes(item.size) }}</v-list-item-subtitle>
                     </v-list-item-content>
+                    <v-list-item-action>
+                        <v-btn icon @click.stop="downloadWithAxios(item.path, item.basename)">
+                            <v-icon class="primary--text">mdi-download</v-icon>
+                        </v-btn>
+                     </v-list-item-action>
 
                     <v-list-item-action>
                         <v-btn icon @click.stop="deleteItem(item)">
@@ -100,6 +116,7 @@
 <script>
 import { formatBytes } from "./util";
 import Confirm from "./Confirm.vue";
+import axios from 'axios'
 
 export default {
     props: {
@@ -137,6 +154,11 @@ export default {
         },
         isFile() {
             return !this.isDir;
+        },
+        filename() {
+            if (!this.isFile) return ""
+            const parts = this.path.split("/")
+            return parts[parts.length - 1];
         }
     },
     methods: {
@@ -186,7 +208,42 @@ export default {
                 this.$emit("file-deleted");
                 this.$emit("loading", false);
             }
-        }
+        },
+        forceFileDownload(response, title) {
+            //console.log(title)
+            const url = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', title)
+            document.body.appendChild(link)
+            link.click()
+        },
+        async downloadWithAxios(path, title) {
+            //console.log(path)
+            //console.log(this.endpoints.download.url)
+            let url = this.endpoints.download.url
+                    .replace(new RegExp("{storage}", "g"), this.storage)
+                    .replace(new RegExp("{path}", "g"), path);
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', title)
+            document.body.appendChild(link)
+            link.click()
+            //console.log(url)
+            let config = {
+                url,
+                method: this.endpoints.download.method || "get",
+                responseType: 'arraybuffer',
+            };
+
+            try {
+                let response = await this.axios.request(config);
+                this.forceFileDownload(response, title)
+            } catch (e) {
+                console.log('error occured');
+                console.log(e);
+            }
+        },
     },
     watch: {
         async path() {
