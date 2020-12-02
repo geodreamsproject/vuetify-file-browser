@@ -125,7 +125,8 @@ export default {
         path: String,
         endpoints: Object,
         axios: Function,
-        refreshPending: Boolean
+        refreshPending: Boolean,
+        basePath : String
     },
     components: {
         Confirm
@@ -167,6 +168,7 @@ export default {
             this.$emit("path-changed", path);
         },
         async load() {
+            console.log(this.path)
             this.$emit("loading", true);
             if (this.isDir) {
                 let url = this.endpoints.list.url

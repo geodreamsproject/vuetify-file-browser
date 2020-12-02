@@ -65,7 +65,8 @@ export default {
         path: String,
         endpoints: Object,
         axios: Function,
-        refreshPending: Boolean
+        refreshPending: Boolean,
+        basePath : String,
     },
     data() {
         return {
@@ -85,8 +86,8 @@ export default {
                 this.items = [
                     {
                         type: "dir",
-                        path: "/",
-                        basename: "root",
+                        path: this.basePath,
+                        basename: this.basePath == "/" ? "root" : this.basePath.replaceAll("/", ""),
                         extension: "",
                         name: "root",
                         children: []

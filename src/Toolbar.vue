@@ -21,7 +21,7 @@
                     </v-list-item>
                 </v-list>
             </v-menu>
-            <v-btn text :input-value="path === '/'" @click="changePath('/')">
+            <v-btn text :input-value="path === '/'" @click="changePath(basePath)">
                 <v-icon class="mr-2">{{storageObject.icon}}</v-icon>
                 {{storageObject.name}}
             </v-btn>
@@ -92,7 +92,8 @@ export default {
         storage: String,
         path: String,
         endpoints: Object,
-        axios: Function
+        axios: Function,
+        basePath : String
     },
     data() {
         return {
@@ -103,8 +104,9 @@ export default {
     computed: {
         pathSegments() {
             let path = "/",
-                isFolder = this.path[this.path.length - 1] === "/",
-                segments = this.path.split("/").filter(item => item);
+                cpath = this.path.replace(this.basePath, "/"),
+                isFolder = cpath[cpath.length - 1] === "/",
+                segments = cpath.split("/").filter(item => item);
 
             segments = segments.map((item, index) => {
                 path +=
@@ -129,6 +131,7 @@ export default {
             }
         },
         changePath(path) {
+            console.log(path)
             this.$emit("path-changed", path);
         },
         goUp() {

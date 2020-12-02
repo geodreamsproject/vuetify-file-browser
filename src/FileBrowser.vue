@@ -6,6 +6,7 @@
             :storage="activeStorage"
             :endpoints="endpoints"
             :axios="axiosInstance"
+            :basePath="basePath"
             v-on:storage-changed="storageChanged"
             v-on:path-changed="pathChanged"
             v-on:add-files="addUploadingFiles"
@@ -20,6 +21,7 @@
                     :endpoints="endpoints"
                     :axios="axiosInstance"
                     :refreshPending="refreshPending"
+                    :basePath="basePath"
                     v-on:path-changed="pathChanged"
                     v-on:loading="loadingChanged"
                     v-on:refreshed="refreshPending = false"
@@ -34,6 +36,7 @@
                     :endpoints="endpoints"
                     :axios="axiosInstance"
                     :refreshPending="refreshPending"
+                    :basePath="basePath"
                     v-on:path-changed="pathChanged"
                     v-on:loading="loadingChanged"
                     v-on:refreshed="refreshPending = false"
@@ -135,6 +138,7 @@ export default {
         },
         // code of default storage
         storage: { type: String, default: "local" },
+        basePath : {type: String, default : "/"},
         // show tree view
         tree: { type: Boolean, default: true },
         // file icons set
@@ -217,8 +221,9 @@ export default {
         this.axiosInstance = this.axios || axios.create(this.axiosConfig);
     },
     mounted() {
+      
         if (!this.path && !(this.tree && this.$vuetify.breakpoint.smAndUp)) {
-            this.pathChanged("/");
+            this.pathChanged(this.basePath);
         }
     }
 };
