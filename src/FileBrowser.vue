@@ -90,12 +90,21 @@ const availableStorages = [
 ];
 
 const endpoints = {
+    list: { url: '/folder{path}', method: 'get' },
+    upload: { url: '/files{path}', method: 'post' },
+    mkdir: { url: '/files{path}', method: 'put' },
+    delete: { url: '/files{path}', method: 'delete' },
+    download : { url: '/files{path}', method: 'get' }
+}
+/*
+const endpoints = {
     list: { url: "/storage/{storage}/list?path={path}", method: "get" },
     upload: { url: "/storage/{storage}/upload?path={path}", method: "post" },
     mkdir: { url: "/storage/{storage}/mkdir?path={path}", method: "post" },
     delete: { url: "/storage/{storage}/delete?path={path}", method: "post" },
     download : { url: "/storage/{storage}/download?path={path}", method: "get" },
 };
+*/
 
 const fileIcons = {
     zip: "mdi-folder-zip-outline",
